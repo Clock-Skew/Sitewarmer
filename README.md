@@ -10,6 +10,8 @@ Lightweight Python CLI for warming and checking selected website URLs without tu
 [![MIT License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
 [![v0.1.1](https://img.shields.io/badge/Release-v0.1.1-0F8B8D?style=for-the-badge)](https://github.com/Clock-Skew/sitewarmer/releases/tag/v0.1.1)
 
+![sitewarmer social preview](assets/sitewarmer-social-preview.jpg)
+
 ## What It Does
 
 `sitewarmer` periodically requests one or more URLs on a site to help keep small or shared-hosted sites responsive, confirm uptime, and improve perceived first-load responsiveness for real users.
