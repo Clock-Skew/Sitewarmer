@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sitewarmer"
+version = "0.1.0"
+description = "A lightweight Python CLI that periodically warms selected website URLs."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Clock-Skew" }]
+keywords = [
+  "website monitor",
+  "uptime monitor",
+  "site warmer",
+  "Python CLI",
+  "shared hosting",
+  "server wakeup",
+  "pingdom alternative",
+  "website uptime",
+  "cron website ping",
+  "lightweight monitoring",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: System :: Monitoring",
+]
+
+[project.scripts]
+sitewarmer = "sitewarmer.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sitewarmer*"]
+
