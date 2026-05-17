@@ -6,6 +6,7 @@ Lightweight Python CLI for warming and checking selected website URLs without tu
 [![setuptools](https://img.shields.io/badge/Build-setuptools-2D9CDB?style=for-the-badge&logo=python&logoColor=white)](https://setuptools.pypa.io/)
 [![unittest](https://img.shields.io/badge/Tests-unittest-4CAF50?style=for-the-badge&logo=python&logoColor=white)](https://docs.python.org/3/library/unittest.html)
 [![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![PyPI](https://img.shields.io/badge/PyPI-sitewarmer-3775A9?style=for-the-badge&logo=pypi&logoColor=white)](https://pypi.org/project/sitewarmer/)
 [![MIT License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
 [![v0.1.1](https://img.shields.io/badge/Release-v0.1.1-0F8B8D?style=for-the-badge)](https://github.com/Clock-Skew/sitewarmer/releases/tag/v0.1.1)
 
@@ -68,6 +69,12 @@ cd /path/to/sitewarmer
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
+```
+
+Or install the published package:
+
+```bash
+pip install sitewarmer
 ```
 
 No third-party runtime dependencies are required.
@@ -282,7 +289,6 @@ python3 -m sitewarmer https://example.com --once
 
 - optional per-host scheduling
 - richer status summaries
-- package publishing
 - release tagging and changelog workflow
 - explicit sitemap index reporting
 
