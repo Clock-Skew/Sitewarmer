@@ -7,7 +7,7 @@ Lightweight Python CLI for warming and checking selected website URLs without tu
 [![unittest](https://img.shields.io/badge/Tests-unittest-4CAF50?style=for-the-badge&logo=python&logoColor=white)](https://docs.python.org/3/library/unittest.html)
 [![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![MIT License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
-[![v0.1.0](https://img.shields.io/badge/Release-v0.1.0-0F8B8D?style=for-the-badge)](https://github.com/Clock-Skew/sitewarmer/releases/tag/v0.1.0)
+[![v0.1.1](https://img.shields.io/badge/Release-v0.1.1-0F8B8D?style=for-the-badge)](https://github.com/Clock-Skew/sitewarmer/releases/tag/v0.1.1)
 
 ![sitewarmer social preview](assets/sitewarmer-social-preview.jpg)
 
