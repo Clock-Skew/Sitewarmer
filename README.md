@@ -2,11 +2,12 @@
 
 Lightweight Python CLI for warming and checking selected website URLs without turning into a load tester.
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Unreleased-orange)
-![CLI](https://img.shields.io/badge/Interface-CLI-informational)
-![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-blueviolet)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![setuptools](https://img.shields.io/badge/Build-setuptools-2D9CDB?style=for-the-badge&logo=python&logoColor=white)](https://setuptools.pypa.io/)
+[![unittest](https://img.shields.io/badge/Tests-unittest-4CAF50?style=for-the-badge&logo=python&logoColor=white)](https://docs.python.org/3/library/unittest.html)
+[![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![MIT License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
+[![v0.1.0](https://img.shields.io/badge/Release-v0.1.0-0F8B8D?style=for-the-badge)](https://github.com/Clock-Skew/sitewarmer/releases/tag/v0.1.0)
 
 ![sitewarmer social preview](assets/sitewarmer-social-preview.jpg)
 
