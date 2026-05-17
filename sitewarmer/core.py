@@ -39,6 +39,7 @@ class SiteWarmerConfig:
     user_agent: str = "sitewarmer/0.1"
     discover: str = "none"
     limit: int = DEFAULT_LIMIT
+    max_depth: int = 0
     include: list[str] = field(default_factory=list)
     exclude: list[str] = field(default_factory=list)
     allow_external: bool = False
@@ -114,6 +115,7 @@ def discover_plan(config: SiteWarmerConfig) -> tuple[list[DiscoveredURL], int]:
         user_agent=config.user_agent,
         limit=config.limit,
         allow_external=config.allow_external,
+        max_depth=config.max_depth,
     )
     delay_candidates = [config.interval]
     for seed in seeds:

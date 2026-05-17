@@ -8,6 +8,8 @@ Lightweight Python CLI for warming and checking selected website URLs without tu
 ![CLI](https://img.shields.io/badge/Interface-CLI-informational)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-blueviolet)
 
+![sitewarmer social preview](assets/sitewarmer-social-preview.jpg)
+
 ## What It Does
 
 `sitewarmer` periodically requests one or more URLs on a site to help keep small or shared-hosted sites responsive, confirm uptime, and improve perceived first-load responsiveness for real users.
@@ -47,6 +49,7 @@ Use this only on websites you own, operate, or are explicitly authorized to chec
 - Custom `User-Agent`
 - Sitemap discovery
 - Internal homepage link discovery
+- Bounded same-site link depth with `--max-depth`
 - Discovery result limiting
 - Include/exclude patterns
 - JSON output
@@ -82,16 +85,24 @@ Warm continuously every 5 minutes:
 sitewarmer https://example.com --interval 300
 ```
 
+`sitewarmer` runs continuously by default. Add `--once` when you want a single cycle.
+
 Discover sitemap URLs first:
 
 ```bash
 sitewarmer https://example.com --discover sitemap --limit 25
 ```
 
+Discover sitemap URLs and homepage links together:
+
+```bash
+sitewarmer https://example.com --discover both --limit 25
+```
+
 Discover internal homepage links:
 
 ```bash
-sitewarmer https://example.com --discover links --exclude "/admin" --exclude "/cart"
+sitewarmer https://example.com --discover links --max-depth 1 --exclude "/admin" --exclude "/cart"
 ```
 
 JSON output:
@@ -117,12 +128,13 @@ sitewarmer https://example.com --log-file warmer.log
 | `--user-agent UA` | Custom `User-Agent` string |
 | `--discover none|sitemap|links|both` | Optional discovery mode |
 | `--limit N` | Maximum discovered URLs to add per run. Default: `10` |
+| `--max-depth N` | Maximum same-site link hops beyond the homepage for `links` or `both` discovery. Default: `0` |
 | `--include PATTERN` | Include filter. Repeatable |
 | `--exclude PATTERN` | Exclude filter. Repeatable |
 | `--allow-external` | Allow external discovered URLs |
 | `--dry-run` | Plan the run without requests |
 | `--once` | Run one cycle and exit |
-| `--continuous` | Keep running until interrupted |
+| `--continuous` | Keep running until interrupted. This is also the default when `--once` is not used |
 | `--json` | Emit JSON output |
 | `--log-file PATH` | Append JSONL event logs to a file |
 | `--read-limit BYTES` | Max bytes read per response. Default: `262144` |
@@ -181,7 +193,9 @@ Only same-site URLs are kept unless `--allow-external` is explicitly set.
 
 ## Link Discovery
 
-`--discover links` fetches the homepage and extracts internal links from anchor tags. It does not recurse forever. It only expands the homepage layer and respects `--limit`.
+`--discover links` fetches the homepage and extracts internal links from anchor tags. By default it stays one hop wide from the homepage. Raise `--max-depth` to let it follow a bounded number of same-site hops, and keep `--limit` low for small sites.
+
+`--discover both` combines sitemap discovery and link discovery in one pass. This is the most useful mode for small, stable sites that already have a sitemap but also expose a few important internal links from the homepage.
 
 ## Safety and Rate Limiting
 
@@ -250,7 +264,7 @@ Confirm uptime during demos, deployments, or maintenance windows without introdu
 ## Troubleshooting
 
 - `invalid URL`: include `https://` or a valid host name
-- `robots.txt` blocks a page`: the tool is respecting the site rules
+- `robots.txt blocks a page`: the tool is respecting the site rules
 - `No output in continuous mode`: check `--json`, `--verbose`, or `--log-file`
 - `Too many discovered URLs`: lower `--limit` or narrow `--include` / `--exclude`
 - `Unexpected external URLs`: remove `--allow-external`
@@ -268,26 +282,13 @@ python3 -m sitewarmer https://example.com --once
 - optional per-host scheduling
 - richer status summaries
 - package publishing
-- CI workflow
+- release tagging and changelog workflow
 - explicit sitemap index reporting
 
 ## Contributing
 
 Keep changes small, safe, and readable. Do not add aggressive crawling, scraping, or load generation.
 
-## SEO Keywords
-
-`website monitor`, `uptime monitor`, `site warmer`, `Python CLI`, `shared hosting`, `server wakeup`, `pingdom alternative`, `website uptime`, `cron website ping`, `lightweight monitoring`
-
-## GitHub Topics
-
-`python`, `cli`, `uptime-monitor`, `website-monitor`, `site-warmer`, `shared-hosting`, `devops`, `monitoring`, `pingdom-alternative`, `cron`
-
-## Social Description
-
-A lightweight Python CLI that periodically checks and warms selected website URLs to improve responsiveness, monitor uptime, and support small/shared-hosted websites without aggressive traffic.
-
 ## License
 
 MIT. See [LICENSE](LICENSE).
-

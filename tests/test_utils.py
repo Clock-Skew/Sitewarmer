@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import unittest
+from urllib.error import URLError
 
-from sitewarmer.discovery import _LinkCollector, _extract_sitemap_urls
+from sitewarmer.discovery import _LinkCollector, _extract_sitemap_urls, discover_from_links, discover_from_sitemaps
 from sitewarmer.utils import ensure_http_url, matches_any, path_and_query, same_site
 
 
@@ -46,7 +47,49 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(root, "urlset")
         self.assertEqual(urls, ["https://example.com/", "https://example.com/blog"])
 
+    @unittest.mock.patch("sitewarmer.discovery.fetch_text")
+    def test_discover_from_sitemaps_follows_nested_indexes(self, mock_fetch_text) -> None:
+        def fake_fetch(url: str, timeout: float, user_agent: str) -> str:
+            pages = {
+                "https://example.com/robots.txt": "Sitemap: https://example.com/sitemap-index.xml\n",
+                "https://example.com/sitemap-index.xml": """<?xml version="1.0" encoding="UTF-8"?>
+                <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                  <sitemap><loc>https://example.com/blog-sitemap.xml</loc></sitemap>
+                </sitemapindex>
+                """,
+                "https://example.com/blog-sitemap.xml": """<?xml version="1.0" encoding="UTF-8"?>
+                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                  <url><loc>https://example.com/blog/post-1</loc></url>
+                  <url><loc>https://example.com/blog/post-2</loc></url>
+                </urlset>
+                """,
+            }
+            if url not in pages:
+                raise URLError(url)
+            return pages[url]
+
+        mock_fetch_text.side_effect = fake_fetch
+        discovered = discover_from_sitemaps("https://example.com", timeout=1.0, user_agent="sitewarmer/0.1", limit=10)
+        self.assertEqual([item.url for item in discovered], ["https://example.com/blog/post-1", "https://example.com/blog/post-2"])
+
+    @unittest.mock.patch("sitewarmer.discovery.fetch_text")
+    def test_discover_from_links_honors_max_depth(self, mock_fetch_text) -> None:
+        def fake_fetch(url: str, timeout: float, user_agent: str) -> str:
+            pages = {
+                "https://example.com/": '<a href="/one">One</a>',
+                "https://example.com/one": '<a href="/two">Two</a>',
+                "https://example.com/two": '<a href="/three">Three</a>',
+            }
+            if url not in pages:
+                raise URLError(url)
+            return pages[url]
+
+        mock_fetch_text.side_effect = fake_fetch
+        shallow = discover_from_links("https://example.com", timeout=1.0, user_agent="sitewarmer/0.1", limit=10, max_depth=0)
+        deeper = discover_from_links("https://example.com", timeout=1.0, user_agent="sitewarmer/0.1", limit=10, max_depth=1)
+        self.assertEqual([item.url for item in shallow], ["https://example.com/one"])
+        self.assertEqual([item.url for item in deeper], ["https://example.com/one", "https://example.com/two"])
+
 
 if __name__ == "__main__":
     unittest.main()
-

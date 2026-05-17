@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections import deque
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from typing import Iterable
@@ -121,36 +122,74 @@ def discover_from_sitemaps(seed_url: str, timeout: float, user_agent: str, limit
     return discovered
 
 
-def discover_from_links(seed_url: str, timeout: float, user_agent: str, limit: int, allow_external: bool = False) -> list[DiscoveredURL]:
+def discover_from_links(
+    seed_url: str,
+    timeout: float,
+    user_agent: str,
+    limit: int,
+    allow_external: bool = False,
+    max_depth: int = 0,
+) -> list[DiscoveredURL]:
     origin = ensure_http_url(seed_url)
     parsed = urlparse(origin)
     homepage = f"{parsed.scheme}://{parsed.netloc}/"
-    collector = _LinkCollector(homepage)
-    try:
-        html_text = fetch_text(homepage, timeout=timeout, user_agent=user_agent)
-    except (HTTPError, URLError, TimeoutError, OSError):
-        return []
-    collector.feed(html_text)
+    max_depth = max(0, max_depth)
+    queue: deque[tuple[str, int]] = deque([(homepage, 0)])
+    queued_pages = {homepage}
+    visited_pages: set[str] = set()
     discovered: list[DiscoveredURL] = []
-    for raw_link in collector.links:
-        candidate = strip_fragment(raw_link)
-        if not allow_external and not same_site(candidate, origin):
+    seen_targets: set[str] = set()
+
+    while queue and len(discovered) < limit:
+        page_url, depth = queue.popleft()
+        visited_pages.add(page_url)
+        try:
+            html_text = fetch_text(page_url, timeout=timeout, user_agent=user_agent)
+        except (HTTPError, URLError, TimeoutError, OSError):
             continue
-        if candidate == origin:
-            continue
-        discovered.append(DiscoveredURL(candidate, "links", homepage))
-        if len(discovered) >= limit:
-            break
+        collector = _LinkCollector(page_url)
+        collector.feed(html_text)
+        for raw_link in collector.links:
+            candidate = strip_fragment(raw_link)
+            if not allow_external and not same_site(candidate, origin):
+                continue
+            if candidate == origin:
+                continue
+            if candidate not in seen_targets:
+                discovered.append(DiscoveredURL(candidate, "links", page_url))
+                seen_targets.add(candidate)
+                if len(discovered) >= limit:
+                    break
+            if depth < max_depth and candidate not in visited_pages and candidate not in queued_pages:
+                queue.append((candidate, depth + 1))
+                queued_pages.add(candidate)
     return discovered
 
 
-def discover_targets(seed_urls: Iterable[str], mode: str, timeout: float, user_agent: str, limit: int, allow_external: bool = False) -> list[DiscoveredURL]:
+def discover_targets(
+    seed_urls: Iterable[str],
+    mode: str,
+    timeout: float,
+    user_agent: str,
+    limit: int,
+    allow_external: bool = False,
+    max_depth: int = 0,
+) -> list[DiscoveredURL]:
     discovered: list[DiscoveredURL] = []
     for seed in seed_urls:
         if mode in {"sitemap", "both"}:
             discovered.extend(discover_from_sitemaps(seed, timeout=timeout, user_agent=user_agent, limit=limit))
         if mode in {"links", "both"}:
-            discovered.extend(discover_from_links(seed, timeout=timeout, user_agent=user_agent, limit=limit, allow_external=allow_external))
+            discovered.extend(
+                discover_from_links(
+                    seed,
+                    timeout=timeout,
+                    user_agent=user_agent,
+                    limit=limit,
+                    allow_external=allow_external,
+                    max_depth=max_depth,
+                )
+            )
     seen: set[str] = set()
     unique: list[DiscoveredURL] = []
     for item in discovered:
